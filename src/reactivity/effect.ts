@@ -6,8 +6,9 @@ let activeEffect
 
 class ReactiveEffect {
   private _fn: any
-  constructor(fn) {
+  constructor(fn, public scheduler?) {
     this._fn = fn
+    this.scheduler = scheduler
   }
   run() {
     activeEffect = this
@@ -35,7 +36,11 @@ export function getDep(target, key) {
 export function trigger(target, key) {
   const dep = getDep(target, key)
   for (const effect of dep) {
-    effect.run()
+    if (effect.scheduler) {
+      effect.scheduler()
+    } else {
+      effect.run()
+    }
   }
 }
 // 收集依赖
@@ -43,9 +48,13 @@ export function track(target, key) {
   const dep = getDep(target, key)
   dep.add(activeEffect)
 }
-
-export function effect(fn) {
-  const _effect = new ReactiveEffect(fn)
+/* 
+scheduler第一次不会被触发，在初始化是不进行调用，仅调用fn
+在后续更新只执行scheduler：trigger时有scheduler就仅执行它，没有传入则默认执行fn
+scheduler放在effect示例上，可以像调用run方法一样去执行
+*/
+export function effect(fn, options: any = {}) {
+  const _effect = new ReactiveEffect(fn, options.scheduler)
 
   _effect.run()
 
