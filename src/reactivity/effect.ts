@@ -7,6 +7,7 @@ let activeEffect
 class ReactiveEffect {
   private _fn: any
   deps = []
+  active = true // 表示当前effect状态
   constructor(fn, public scheduler?) {
     this._fn = fn
     this.scheduler = scheduler
@@ -16,11 +17,17 @@ class ReactiveEffect {
     return this._fn()
   }
   stop() {
-    this.deps.forEach((dep: any) => {
-      // console.dir(dep)
-      dep.delete(this)
-    })
+    // 优化点：设置状态保证只清空一次deps，避免用户频繁调用stop
+    if (this.active) {
+      cleanupEffect(this)
+      this.active = false
+    }
   }
+}
+function cleanupEffect(effect) {
+  effect.deps.forEach((dep: any) => {
+    dep.delete(effect)
+  })
 }
 
 // 获取某一对象的某个属性的dep
