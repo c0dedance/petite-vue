@@ -1,5 +1,5 @@
 import { reactive } from '../reactivity'
-import { effect } from '../effect'
+import { effect, stop } from '../effect'
 describe('effect', () => {
   it('happy path', () => {
     const person = reactive({
@@ -55,5 +55,21 @@ describe('effect', () => {
     run()
     // should have run
     expect(dummy).toBe(2)
+  })
+  it('stop', () => {
+    let dummy
+    const obj = reactive({ prop: 1 })
+    const runner = effect(() => {
+      dummy = obj.prop
+    })
+    obj.prop = 2
+    expect(dummy).toBe(2)
+    stop(runner)
+    obj.prop = 3
+    expect(dummy).toBe(2)
+
+    // stopped effect should still be manually callable
+    runner()
+    expect(dummy).toBe(3)
   })
 })
