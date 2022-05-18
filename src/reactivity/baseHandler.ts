@@ -10,7 +10,11 @@ export const mutableHandlers = {
 export const readonlyHandlers = {
   get: readonlyGet,
   set(target, key, value, receiver) {
-    return false
+    console.warn(
+      `key :"${String(key)}" set fail, readonly Object must not been set`,
+      target
+    )
+    return true
   }
 }
 export function createGetter(isReadonly = false) {
