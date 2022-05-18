@@ -6,6 +6,7 @@ let activeEffect
 
 class ReactiveEffect {
   private _fn: any
+  deps = []
   constructor(fn, public scheduler?) {
     this._fn = fn
     this.scheduler = scheduler
@@ -13,6 +14,12 @@ class ReactiveEffect {
   run() {
     activeEffect = this
     return this._fn()
+  }
+  stop() {
+    this.deps.forEach((dep: any) => {
+      // console.dir(dep)
+      dep.delete(this)
+    })
   }
 }
 
@@ -47,6 +54,13 @@ export function trigger(target, key) {
 export function track(target, key) {
   const dep = getDep(target, key)
   dep.add(activeEffect)
+  // activeEffect反向收集dep
+  activeEffect.deps.push(dep)
+  /* 
+  dep是什么，是一个set，储存着所有effec实例对象
+  一个对象的一个key -> 一个dep，收集所有effec实例对象（fn）
+  effec实例对象的deps 收集所有dep 即这个fn所有依赖的key
+  */
 }
 /* 
 scheduler第一次不会被触发，在初始化是不进行调用，仅调用fn
@@ -58,5 +72,12 @@ export function effect(fn, options: any = {}) {
 
   _effect.run()
 
-  return _effect.run.bind(_effect)
+  const runner: any = _effect.run.bind(_effect)
+  // 将effect挂载到runner,方便我们通过runner调用stop
+  runner.effect = _effect
+  return runner
+}
+
+export function stop(runner) {
+  runner.effect.stop()
 }
