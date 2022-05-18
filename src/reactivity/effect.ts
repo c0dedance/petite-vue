@@ -1,4 +1,4 @@
-import { extend } from "./shared"
+import { extend } from './shared'
 
 // 存储各个对象target -> 各个属性key -> dep
 const targetMap = new WeakMap()
@@ -67,6 +67,8 @@ export function trigger(target, key) {
 // 收集依赖
 export function track(target, key) {
   const dep = getDep(target, key)
+  // 当不是由effect引起的get时，不收集依赖，此时activeEffect为空
+  if (!activeEffect) return
   dep.add(activeEffect)
   // activeEffect反向收集dep
   activeEffect.deps.push(dep)
@@ -84,7 +86,7 @@ scheduler放在effect示例上，可以像调用run方法一样去执行
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
   // 合并options
-  extend(_effect,options)
+  extend(_effect, options)
   _effect.run()
 
   const runner: any = _effect.run.bind(_effect)
