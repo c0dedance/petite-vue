@@ -8,6 +8,7 @@ class ReactiveEffect {
   private _fn: any
   deps = []
   active = true // 表示当前effect状态
+  onStop?: () => void
   constructor(fn, public scheduler?) {
     this._fn = fn
     this.scheduler = scheduler
@@ -20,6 +21,10 @@ class ReactiveEffect {
     // 优化点：设置状态保证只清空一次deps，避免用户频繁调用stop
     if (this.active) {
       cleanupEffect(this)
+      if (this.onStop) {
+        // 触发钩子onStop
+        this.onStop()
+      }
       this.active = false
     }
   }
@@ -76,7 +81,7 @@ scheduler放在effect示例上，可以像调用run方法一样去执行
 */
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
-
+  _effect.onStop = options.onStop
   _effect.run()
 
   const runner: any = _effect.run.bind(_effect)
