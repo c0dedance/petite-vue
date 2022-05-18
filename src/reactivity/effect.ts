@@ -1,3 +1,5 @@
+import { extend } from "./shared"
+
 // 存储各个对象target -> 各个属性key -> dep
 const targetMap = new WeakMap()
 
@@ -81,7 +83,8 @@ scheduler放在effect示例上，可以像调用run方法一样去执行
 */
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
-  _effect.onStop = options.onStop
+  // 合并options
+  extend(_effect,options)
   _effect.run()
 
   const runner: any = _effect.run.bind(_effect)
