@@ -1,4 +1,5 @@
 import { track, trigger } from './effect'
+import { ReactiveFlags } from './reactive'
 // 优化点：每次创建响应式对象不必重新创建set和set
 const get = createGetter()
 const set = createSetter()
@@ -19,6 +20,10 @@ export const readonlyHandlers = {
 }
 export function createGetter(isReadonly = false) {
   return function (target, key, receiver) {
+    // 通过访问某个属性触发get，由此判断区分Reactive/Readonly
+    if (key === ReactiveFlags.IS_REACTIVE) {
+      return !isReadonly
+    }
     const res = Reflect.get(target, key)
     if (!isReadonly) {
       // 只读对象不需要收集依赖
