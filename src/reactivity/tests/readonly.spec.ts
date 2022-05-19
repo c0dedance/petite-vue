@@ -1,4 +1,4 @@
-import { readonly } from '../reactivity'
+import { readonly } from '../reactive'
 
 describe('readonly', () => {
   it('should make nested values readonly', () => {
