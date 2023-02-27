@@ -17,7 +17,10 @@ class ReactiveEffect {
   }
   run() {
     activeEffect = this
-    return this._fn()
+    const res = this._fn()
+    // 完成收集后置空，防止stop的effect对象触发getter收集到
+    activeEffect = null
+    return res
   }
   stop() {
     // 优化点：设置状态保证只清空一次deps，避免用户频繁调用stop
