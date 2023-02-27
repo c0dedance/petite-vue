@@ -65,29 +65,30 @@ describe('effect', () => {
     obj.prop = 2
     expect(dummy).toBe(2)
     stop(runner)
-    obj.prop = 3
+    // obj.prop = 3 只设计get操作
+    obj.prop++ // 涉及get和set，此处的get又会重新收集依赖
     expect(dummy).toBe(2)
 
     // stopped effect should still be manually callable
     runner()
     expect(dummy).toBe(3)
   })
-  it("onStop", () => {
+  it('onStop', () => {
     const obj = reactive({
-      foo: 1,
-    });
-    const onStop = jest.fn();
-    let dummy;
+      foo: 1
+    })
+    const onStop = jest.fn()
+    let dummy
     const runner = effect(
       () => {
-        dummy = obj.foo;
+        dummy = obj.foo
       },
       {
-        onStop,
+        onStop
       }
-    );
+    )
 
-    stop(runner);
-    expect(onStop).toBeCalledTimes(1);
-  });
+    stop(runner)
+    expect(onStop).toBeCalledTimes(1)
+  })
 })
