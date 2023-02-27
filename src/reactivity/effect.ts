@@ -5,7 +5,7 @@ const targetMap = new WeakMap()
 
 // 全局变量activeEffect是收集依赖的桥梁
 let activeEffect
-
+let shouldTrack = true
 class ReactiveEffect {
   private _fn: any
   deps = []
@@ -16,11 +16,21 @@ class ReactiveEffect {
     this.scheduler = scheduler
   }
   run() {
+    // 当前stop的状态下，只去执行fn，而不收集依赖（不开启shouldTrack &&activeEffect = null）
+    if (!this.active) {
+      return this._fn()
+    }
+    shouldTrack = true
     activeEffect = this
     const res = this._fn()
     // 完成收集后置空，防止stop的effect对象触发getter收集到
     activeEffect = null
+    shouldTrack = false
     return res
+    /*
+    effect -> run -> isActive(stop)? n -> fn()  -> get -> shouldtrack？ -> not track(activeEffect no exit)
+    effect -> run -> isActive(stop)? y ->  shouldtrack=true -> activeEffect=this -> fn() ->shouldtrack ->dep.add  ->  shouldtrack=false
+    */
   }
   stop() {
     // 优化点：设置状态保证只清空一次deps，避免用户频繁调用stop
@@ -38,6 +48,8 @@ function cleanupEffect(effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
   })
+  // 优化点：deps移除本身后，已经完成cleanupEffect的使命，可以清空了
+  effect.deps.length = 0
 }
 
 // 获取某一对象的某个属性的dep
@@ -72,6 +84,9 @@ export function track(target, key) {
   const dep = getDep(target, key)
   // 当不是由effect引起的get时，不收集依赖，此时activeEffect为空
   if (!activeEffect) return
+  // 通过全局变量shouldTrack控制是否收集依赖
+  if (!shouldTrack) return
+
   dep.add(activeEffect)
   // activeEffect反向收集dep
   activeEffect.deps.push(dep)
