@@ -51,7 +51,9 @@ function cleanupEffect(effect) {
   // 优化点：deps移除本身后，已经完成cleanupEffect的使命，可以清空了
   effect.deps.length = 0
 }
-
+function isTracking() {
+  return shouldTrack && activeEffect
+}
 // 获取某一对象的某个属性的dep
 export function getDep(target, key) {
   let depsMap = targetMap.get(target)
@@ -82,11 +84,13 @@ export function trigger(target, key) {
 // 收集依赖
 export function track(target, key) {
   const dep = getDep(target, key)
-  // 当不是由effect引起的get时，不收集依赖，此时activeEffect为空
-  if (!activeEffect) return
-  // 通过全局变量shouldTrack控制是否收集依赖
-  if (!shouldTrack) return
 
+  // 当不是由effect引起的get时，不收集依赖，此时activeEffect为空
+  // 通过全局变量shouldTrack控制是否收集依赖
+  if (!isTracking()) return
+
+
+  if (dep.has(activeEffect)) return
   dep.add(activeEffect)
   // activeEffect反向收集dep
   activeEffect.deps.push(dep)
