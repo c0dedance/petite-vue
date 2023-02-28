@@ -5,7 +5,7 @@ const targetMap = new WeakMap()
 
 // 全局变量activeEffect是收集依赖的桥梁
 let activeEffect
-let shouldTrack = true
+let shouldTrack = false
 class ReactiveEffect {
   private _fn: any
   deps = []
