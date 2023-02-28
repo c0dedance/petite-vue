@@ -1,5 +1,6 @@
 import { track, trigger } from './effect'
-import { ReactiveFlags } from './reactive'
+import { reactive, ReactiveFlags, readonly } from './reactive'
+import { isObject } from './shared'
 // 优化点：每次创建响应式对象不必重新创建set和set
 const get = createGetter()
 const set = createSetter()
@@ -28,6 +29,12 @@ export function createGetter(isReadonly = false) {
       return isReadonly
     }
     const res = Reflect.get(target, key)
+
+    // 深度响应式对象转换
+    if (isObject(res)) {
+      return isReadonly ? readonly(res) : reactive(res)
+    }
+
     if (!isReadonly) {
       // 只读对象不需要收集依赖
       track(target, key)
