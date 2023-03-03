@@ -5,6 +5,7 @@ import { isObject } from './shared'
 const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
+const shallowReadonlyGet = createGetter(true,true)
 export const mutableHandlers = {
   get,
   set
@@ -19,7 +20,14 @@ export const readonlyHandlers = {
     return true
   }
 }
-export function createGetter(isReadonly = false) {
+
+export const shallowReadonlyHandlers = {
+  // setter逻辑同readonlyHandlers，只重写get逻辑
+  ...readonlyHandlers,
+  get: shallowReadonlyGet
+}
+
+export function createGetter(isReadonly = false,isShallow = false) {
   return function (target, key, receiver) {
     // 通过访问某个属性触发get，由此判断区分Reactive/Readonly
     if (key === ReactiveFlags.IS_REACTIVE) {
@@ -31,7 +39,7 @@ export function createGetter(isReadonly = false) {
     const res = Reflect.get(target, key)
 
     // 深度响应式对象转换
-    if (isObject(res)) {
+    if (isObject(res) && !isShallow) {
       return isReadonly ? readonly(res) : reactive(res)
     }
 

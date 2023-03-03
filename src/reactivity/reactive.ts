@@ -1,7 +1,8 @@
 import {
   createReactiveObject,
   mutableHandlers,
-  readonlyHandlers
+  readonlyHandlers,
+  shallowReadonlyHandlers
 } from './baseHandler'
 export const enum ReactiveFlags {
   IS_REACTIVE = '__v_isReactive',
@@ -14,6 +15,11 @@ export function reactive(raw) {
 export function readonly(raw) {
   return createReactiveObject(raw, readonlyHandlers)
 }
+
+export function shallowReadonly(raw) {
+  return createReactiveObject(raw, shallowReadonlyHandlers);
+}
+
 export function isReactive(obj) {
   // 原始对象则没有劫持get，访问该属性返回undefined，我们对其转为boolean
   return !!obj[ReactiveFlags.IS_REACTIVE]
