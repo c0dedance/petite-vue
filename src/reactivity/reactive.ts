@@ -20,11 +20,14 @@ export function shallowReadonly(raw) {
   return createReactiveObject(raw, shallowReadonlyHandlers);
 }
 
-export function isReactive(obj) {
+export function isReactive(target) {
   // 原始对象则没有劫持get，访问该属性返回undefined，我们对其转为boolean
-  return !!obj[ReactiveFlags.IS_REACTIVE]
+  return !!target[ReactiveFlags.IS_REACTIVE]
 }
-export function isReadonly(obj) {
+export function isReadonly(target) {
   // 原始对象则没有劫持get，访问该属性返回undefined，我们对其转为boolean
-  return !!obj[ReactiveFlags.IS_READONLY]
+  return !!target[ReactiveFlags.IS_READONLY]
+}
+export function isProxy(target) {
+  return isReactive(target) || isReadonly(target)
 }
