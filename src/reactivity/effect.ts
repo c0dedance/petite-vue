@@ -44,6 +44,7 @@ class ReactiveEffect {
     }
   }
 }
+
 function cleanupEffect(effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
@@ -51,9 +52,11 @@ function cleanupEffect(effect) {
   // 优化点：deps移除本身后，已经完成cleanupEffect的使命，可以清空了
   effect.deps.length = 0
 }
-function isTracking() {
+
+export function isTracking() {
   return shouldTrack && activeEffect
 }
+
 // 获取某一对象的某个属性的dep
 export function getDep(target, key) {
   let depsMap = targetMap.get(target)
@@ -70,26 +73,24 @@ export function getDep(target, key) {
   }
   return dep
 }
+
 // 触发依赖
 export function trigger(target, key) {
   const dep = getDep(target, key)
-  for (const effect of dep) {
-    if (effect.scheduler) {
-      effect.scheduler()
-    } else {
-      effect.run()
-    }
-  }
+  triggerEffects(dep)
 }
 // 收集依赖
 export function track(target, key) {
   const dep = getDep(target, key)
-
   // 当不是由effect引起的get时，不收集依赖，此时activeEffect为空
   // 通过全局变量shouldTrack控制是否收集依赖
   if (!isTracking()) return
 
+  trackEffects(dep)
 
+}
+
+export function trackEffects(dep) {
   if (dep.has(activeEffect)) return
   dep.add(activeEffect)
   // activeEffect反向收集dep
@@ -100,6 +101,17 @@ export function track(target, key) {
   effec实例对象的deps 收集所有dep 即这个fn所有依赖的key
   */
 }
+
+export function triggerEffects(dep) {
+  for (const effect of dep) {
+    if (effect.scheduler) {
+      effect.scheduler()
+    } else {
+      effect.run()
+    }
+  }
+}
+
 /* 
 scheduler第一次不会被触发，在初始化是不进行调用，仅调用fn
 在后续更新只执行scheduler：trigger时有scheduler就仅执行它，没有传入则默认执行fn
