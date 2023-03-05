@@ -1,3 +1,4 @@
+import { hasChanged } from './shared/index';
 import { isTracking, trackEffects, triggerEffects } from "./effect"
 
 class RefImpl {
@@ -14,6 +15,7 @@ class RefImpl {
     return this._value
   }
   set value(newVal) {
+    if (!hasChanged(this._value, newVal)) return
     this._value = newVal
     triggerEffects(this.deps)
   }
