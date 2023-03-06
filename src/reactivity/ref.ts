@@ -6,6 +6,7 @@ class RefImpl {
   private _value: any
   private _rawValue: any
   private deps = new Set()
+  public __v_isRef = true;
   constructor(value) {
     this._rawValue = value
     this._value = convert(value)
@@ -33,4 +34,8 @@ export function ref(value) {
 function convert(value) {
   // 如果.value的值对应一个对象，则走 reactive 的逻辑
   return isObject(value) ? reactive(value) : value
+}
+
+export function isRef(ref) {
+  return !!ref?.__v_isRef
 }
