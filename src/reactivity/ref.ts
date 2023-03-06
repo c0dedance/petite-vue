@@ -43,3 +43,24 @@ export function isRef(ref) {
 export function unRef(ref) {
   return isRef(ref) ? ref.value : ref
 }
+/* 
+触发getter时，key对应的value值为`ref`，则进行`unRef`，否则返回原值
+触发setter时，总是要进行替换，
+  但如果newVal是非ref值，原来的是ref，则将set赋值给.value
+  其他情况都是直接替换，包括`target[key]`isRef newVal isRef
+*/
+export function proxyRefs(objectWithRefs) {
+  return new Proxy(objectWithRefs, {
+    get(target, key) {
+      return unRef(Reflect.get(target, key));
+    },
+
+    set(target, key, value) {
+      if (isRef(target[key]) && !isRef(value)) {
+        return (target[key].value = value);
+      } else {
+        return Reflect.set(target, key, value);
+      }
+    },
+  });
+}
