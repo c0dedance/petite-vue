@@ -6,7 +6,7 @@ const targetMap = new WeakMap()
 // 全局变量activeEffect是收集依赖的桥梁
 let activeEffect
 let shouldTrack = false
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any
   deps = []
   active = true // 表示当前effect状态
