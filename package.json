@@ -1,9 +1,12 @@
 {
   "name": "petite-vue",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "lib/petite-vue.cjs.js",
+  "module": "lib/petite-vue.esm.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "rollup -c rollup.config.js"
   },
   "repository": "git@github.com:c0dedance/petite-vue.git",
   "author": "c0dedance",
@@ -12,9 +15,12 @@
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-typescript": "^7.16.7",
+    "@rollup/plugin-typescript": "^11.0.0",
     "@types/jest": "^27.5.1",
     "babel-jest": "^28.1.0",
     "jest": "^28.1.0",
+    "rollup": "^3.18.0",
+    "tslib": "^2.5.0",
     "typescript": "^4.6.4"
   }
 }
