@@ -1,4 +1,4 @@
-import { extend } from './shared'
+import { extend } from '../shared'
 
 // 存储各个对象target -> 各个属性key -> dep
 const targetMap = new WeakMap()

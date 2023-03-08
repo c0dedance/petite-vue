@@ -1,11 +1,11 @@
 import { track, trigger } from './effect'
 import { reactive, ReactiveFlags, readonly } from './reactive'
-import { isObject } from './shared'
+import { isObject } from '../shared'
 // 优化点：每次创建响应式对象不必重新创建set和set
 const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
-const shallowReadonlyGet = createGetter(true,true)
+const shallowReadonlyGet = createGetter(true, true)
 export const mutableHandlers = {
   get,
   set
@@ -27,7 +27,7 @@ export const shallowReadonlyHandlers = {
   get: shallowReadonlyGet
 }
 
-export function createGetter(isReadonly = false,isShallow = false) {
+export function createGetter(isReadonly = false, isShallow = false) {
   return function (target, key, receiver) {
     // 通过访问某个属性触发get，由此判断区分Reactive/Readonly
     if (key === ReactiveFlags.IS_REACTIVE) {
