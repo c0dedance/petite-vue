@@ -8,16 +8,16 @@ export const App = {
     },
       /* children: string | any[] */
       // 'hi,petite-vue'
-      // `hi,${this.msg}`
-      [
-        h("p", { class: 'pink' }, 'hi'),
-        h("p", { class: 'skyblue' }, 'petite-vue')
-      ]
+      `hi,${this.msg}`
+      // [
+      //   h("p", { class: 'pink' }, 'hi'),
+      //   h("p", { class: 'skyblue' }, 'petite-vue')
+      // ]
     )
   },
   setup() {
     return {
-      msg: 'petite-vue'
+      msg: 'petite-vue 888'
     }
   }
 }
