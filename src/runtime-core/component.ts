@@ -1,3 +1,4 @@
+import { isObject } from '../shared';
 export function createComponentInstance(vnode) {
   const component = {
     vnode,
@@ -30,7 +31,7 @@ function handleSetupResult(instance, setupResult) {
   // function
 
   // object
-  if (typeof setupResult === "object" && setupResult !== null) {
+  if (isObject(setupResult)) {
     instance.setupState = setupResult
   }
   finishComponentSetup(instance)
