@@ -1,18 +1,18 @@
-import { isString, isArray } from './../shared/index';
-import { isObject } from '../shared/index';
 import { createComponentInstance, setupComponent } from "./component"
+import { ShapeFlags } from '../shared/ShapeFlags';
 
 export function render(vnode, container) {
   patch(vnode, container)
 }
 
 function patch(vnode, container) {
+  const { shapeFlag } = vnode
   // 处理组件
-  if (isObject(vnode.type)) {
+  if (ShapeFlags.STATEFUL_COMPONENT & shapeFlag) {
     processComponent(vnode, container)
   }
   // 处理element
-  else if (isString(vnode.type)) {
+  else if (ShapeFlags.ELEMENT & shapeFlag) {
     processElement(vnode, container)
   }
 }
@@ -33,7 +33,7 @@ function mountComponent(vnode, container) {
 }
 
 function mountElement(vnode, container) {
-  const { type, props, children } = vnode
+  const { type, props, children, shapeFlag } = vnode
   // 创建元素,并将元素挂载到vnode上
   // 这里挂载的是在subTree
   const el = vnode.el = document.createElement(type)
@@ -43,9 +43,9 @@ function mountElement(vnode, container) {
     el.setAttribute(key, value)
   }
   // 处理children
-  if (isString(children)) {
+  if (ShapeFlags.TEXT_CHILDREN & shapeFlag) {
     el.textContent = children
-  } else if (isArray(children)) {
+  } else if (ShapeFlags.ARRAY_CHILDREN & shapeFlag) {
     mountChildren(children, el)
   }
   container.append(el)
