@@ -6,7 +6,9 @@ export const App = {
     window.self = this
     return h('h2', {
       id: "root",
-      class: ['fighting', 'gogogo']
+      class: ['fighting', 'gogogo'],
+      onClick: () => console.log('我被点了'),
+      onMousemove: () => console.log('我被注意了')
     },
       /* children: string | any[] */
       // 'hi,petite-vue'

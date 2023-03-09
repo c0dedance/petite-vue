@@ -1,3 +1,4 @@
+import { isEventKey } from './../shared/index';
 import { createComponentInstance, setupComponent } from "./component"
 import { ShapeFlags } from '../shared/ShapeFlags';
 
@@ -40,6 +41,13 @@ function mountElement(vnode, container) {
   // 处理props
   for (const key of Reflect.ownKeys(props)) {
     const value = props[key]
+    // 处理事件
+    if (isEventKey(key)) {
+      const event = key.slice(2).toLowerCase();
+      el.addEventListener(event, value);
+      continue
+    }
+    // 处理属性
     el.setAttribute(key, value)
   }
   // 处理children
