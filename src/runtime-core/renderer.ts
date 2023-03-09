@@ -34,8 +34,9 @@ function mountComponent(vnode, container) {
 
 function mountElement(vnode, container) {
   const { type, props, children } = vnode
-  // 创建元素
-  const el = document.createElement(type)
+  // 创建元素,并将元素挂载到vnode上
+  // 这里挂载的是在subTree
+  const el = vnode.el = document.createElement(type)
   // 处理props
   for (const key of Reflect.ownKeys(props)) {
     const value = props[key]
@@ -52,10 +53,12 @@ function mountElement(vnode, container) {
 
 function setupRenderEffect(instance, container) {
   // subTree == vnode -> patch
-  const { proxy } = instance
+  const { proxy, vnode } = instance
   const subTree = instance.render.call(proxy)
 
   patch(subTree, container)
+  // 取出组件根元素的element，挂在组件上
+  vnode.el = subTree.el
 }
 
 function mountChildren(children, container) {

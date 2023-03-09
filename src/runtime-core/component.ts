@@ -1,12 +1,12 @@
 import { isObject } from '../shared';
 export function createComponentInstance(vnode) {
-  const component = {
+  const componentInstance = {
     vnode,
-    type: vnode.type,
+    type: vnode.type,// component
     setupState: {}
   }
 
-  return component
+  return componentInstance
 }
 
 export function setupComponent(instance) {
@@ -23,9 +23,12 @@ function setupStatefulComponent(instance) {
   // ctx
   instance.proxy = new Proxy({}, {
     get(target, key) {
-      const { setupState } = instance
+      const { setupState, vnode } = instance
       if (key in setupState) {
         return setupState[key]
+      }
+      if (key === '$el') {
+        return vnode.el
       }
     }
   })
