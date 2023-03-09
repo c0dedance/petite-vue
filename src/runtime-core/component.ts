@@ -1,4 +1,5 @@
 import { isObject } from '../shared';
+import { PublicInstanceProxyHandlers } from './componentPublicInstance';
 export function createComponentInstance(vnode) {
   const componentInstance = {
     vnode,
@@ -20,18 +21,8 @@ export function setupComponent(instance) {
 
 function setupStatefulComponent(instance) {
 
-  // ctx
-  instance.proxy = new Proxy({}, {
-    get(target, key) {
-      const { setupState, vnode } = instance
-      if (key in setupState) {
-        return setupState[key]
-      }
-      if (key === '$el') {
-        return vnode.el
-      }
-    }
-  })
+  // ctx 把instance放在target对象，作为一个ctx传递
+  instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers)
   // vnode.type就是Component本身
   const Component = instance.type
   const { setup } = Component
