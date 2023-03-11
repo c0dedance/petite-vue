@@ -39,7 +39,7 @@ function mountElement(vnode, container) {
   // 这里挂载的是在subTree
   const el = vnode.el = document.createElement(type)
   // 处理props
-  for (const key of Reflect.ownKeys(props)) {
+  for (const key of Object.keys(props)) {
     const value = props[key]
     // 处理事件
     if (isEventKey(key)) {
