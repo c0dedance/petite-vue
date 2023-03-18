@@ -1,4 +1,4 @@
-import { h, createTextVNode } from "../../lib/petite-vue.esm.js";
+import { h, createTextVNode, getCurrentInstance } from "../../lib/petite-vue.esm.js";
 import { Foo } from "./Foo.js";
 
 // Fragment 以及 Text
@@ -77,6 +77,7 @@ export const App = {
   },
 
   setup() {
+    console.log('getCurrentInstance:', getCurrentInstance());
     return {};
   },
 };

@@ -21,7 +21,7 @@ export function setupComponent(instance) {
   // 初始化props
   initProps(instance, instance.vnode.props)
   // 初始化slots
-  initSlots(instance,instance.vnode.children)
+  initSlots(instance, instance.vnode.children)
   // 初始化状态
   setupStatefulComponent(instance)
 }
@@ -34,11 +34,13 @@ function setupStatefulComponent(instance) {
   const Component = instance.type
   const { setup } = Component
   if (setup) {
+    setCurrentInstance(instance);
     const readonlyProps = shallowReadonly(instance.props)
     // 传入props ctx
     const setupResult = setup(readonlyProps, {
       emit: instance.emit
     })
+    setCurrentInstance(null);
     handleSetupResult(instance, setupResult)
   }
 }
@@ -52,9 +54,20 @@ function handleSetupResult(instance, setupResult) {
   }
   finishComponentSetup(instance)
 }
+
 function finishComponentSetup(instance) {
   const Component = instance.type
   if (Component.render) {
     instance.render = Component.render
   }
+}
+
+let currentInstance = null;
+
+export function getCurrentInstance() {
+  return currentInstance;
+}
+
+export function setCurrentInstance(instance) {
+  currentInstance = instance;
 }
