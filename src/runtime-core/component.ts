@@ -3,12 +3,14 @@ import { isObject } from '../shared';
 import { emit } from './componentEmit';
 import { initProps } from './componentProps';
 import { PublicInstanceProxyHandlers } from './componentPublicInstance';
+import { initSlots } from './componentSlots';
 export function createComponentInstance(vnode) {
   const componentInstance = {
     vnode,
     type: vnode.type,// component
     setupState: {},
     props: {},
+    slots: {},
     emit: () => { }
   }
   componentInstance.emit = emit.bind(null, componentInstance) as any
@@ -19,7 +21,7 @@ export function setupComponent(instance) {
   // 初始化props
   initProps(instance, instance.vnode.props)
   // 初始化slots
-  // initSlots()
+  initSlots(instance,instance.vnode.children)
   // 初始化状态
   setupStatefulComponent(instance)
 }
