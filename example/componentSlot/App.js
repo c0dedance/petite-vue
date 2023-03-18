@@ -1,7 +1,4 @@
-import {
-  h,
-  // createTextVNode
-} from "../../lib/petite-vue.esm.js";
+import { h, createTextVNode } from "../../lib/petite-vue.esm.js";
 import { Foo } from "./Foo.js";
 
 // Fragment 以及 Text
@@ -69,7 +66,7 @@ export const App = {
       {
         header: ({ msg }) => [
           h("p", {}, "header" + msg),
-          // createTextVNode("你好呀"),
+          createTextVNode("你好呀"),
         ],
         footer: () => h("p", {}, "footer"),
       }

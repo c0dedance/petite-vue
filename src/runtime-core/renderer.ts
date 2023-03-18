@@ -1,7 +1,7 @@
 import { isEventKey } from './../shared/index';
 import { createComponentInstance, setupComponent } from "./component"
 import { ShapeFlags } from '../shared/ShapeFlags';
-import { Fragment } from './vnode';
+import { Fragment, Text } from './vnode';
 
 export function render(vnode, container) {
   patch(vnode, container)
@@ -14,6 +14,10 @@ function patch(vnode, container) {
     // 处理Fragment(只渲染children)
     case Fragment:
       processFragment(vnode, container)
+      break;
+    // 处理Text(文字节点，纯文字无标签包裹)
+    case Text:
+      processText(vnode, container)
       break;
 
     default:
@@ -39,7 +43,13 @@ function processElement(vnode, container) {
 }
 
 function processFragment(vnode, container) {
-  mountChildren(vnode.children,container)
+  mountChildren(vnode.children, container)
+}
+function processText(vnode, container) {
+  // createVNode(Text, {}, text)
+  const { children } = vnode
+  const textNode = vnode.el = document.createTextNode(children)
+  container.append(textNode)
 }
 
 function mountComponent(vnode, container) {
