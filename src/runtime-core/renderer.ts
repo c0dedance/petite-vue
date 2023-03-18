@@ -1,21 +1,33 @@
 import { isEventKey } from './../shared/index';
 import { createComponentInstance, setupComponent } from "./component"
 import { ShapeFlags } from '../shared/ShapeFlags';
+import { Fragment } from './vnode';
 
 export function render(vnode, container) {
   patch(vnode, container)
 }
 
 function patch(vnode, container) {
-  const { shapeFlag } = vnode
-  // 处理组件
-  if (ShapeFlags.STATEFUL_COMPONENT & shapeFlag) {
-    processComponent(vnode, container)
+  const { shapeFlag, type } = vnode
+
+  switch (type) {
+    // 处理Fragment(只渲染children)
+    case Fragment:
+      processFragment(vnode, container)
+      break;
+
+    default:
+      // 处理组件
+      if (ShapeFlags.STATEFUL_COMPONENT & shapeFlag) {
+        processComponent(vnode, container)
+      }
+      // 处理element
+      else if (ShapeFlags.ELEMENT & shapeFlag) {
+        processElement(vnode, container)
+      }
+      break;
   }
-  // 处理element
-  else if (ShapeFlags.ELEMENT & shapeFlag) {
-    processElement(vnode, container)
-  }
+
 }
 
 function processComponent(vnode, container) {
@@ -24,6 +36,10 @@ function processComponent(vnode, container) {
 
 function processElement(vnode, container) {
   mountElement(vnode, container)
+}
+
+function processFragment(vnode, container) {
+  mountChildren(vnode.children,container)
 }
 
 function mountComponent(vnode, container) {
