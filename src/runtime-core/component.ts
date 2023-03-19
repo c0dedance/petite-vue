@@ -4,13 +4,15 @@ import { emit } from './componentEmit';
 import { initProps } from './componentProps';
 import { PublicInstanceProxyHandlers } from './componentPublicInstance';
 import { initSlots } from './componentSlots';
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode, parent) {
   const componentInstance = {
     vnode,
     type: vnode.type,// component
     setupState: {},
     props: {},
     slots: {},
+    parent,
+    provides: parent ? Object.create(parent?.provides) : {}, // 基于原型链的查找
     emit: () => { }
   }
   componentInstance.emit = emit.bind(null, componentInstance) as any
