@@ -1,14 +1,14 @@
 import typescript from "@rollup/plugin-typescript";
 export default {
-  input: "./src/index.ts",
+  input: "./packages/vue/src/index.ts",
   output: [
     {
       format: "cjs",
-      file: 'lib/petite-vue.cjs.js',
+      file: "packages/vue/dist/petite-vue.cjs.js",
     },
     {
       format: "es",
-      file: 'lib/petite-vue.esm.js',
+      file: "packages/vue/dist/petite-vue.esm.js",
     },
   ],
 
