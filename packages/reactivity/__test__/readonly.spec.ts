@@ -1,4 +1,5 @@
 import { isReadonly, readonly, isProxy } from '../src/reactive'
+import { vi } from 'vitest'
 
 describe('readonly', () => {
   it('should make nested values readonly', () => {
@@ -17,7 +18,7 @@ describe('readonly', () => {
   })
   it('should call console.warn when set', () => {
     // mock 使用假的fn去替换console.warn，方便断言
-    console.warn = jest.fn()
+    console.warn = vi.fn()
     const user = readonly({
       age: 10
     })
