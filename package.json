@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
+    "dev": "rollup -c rollup.config.js --watch",
     "build": "rollup -c rollup.config.js"
   },
   "repository": "git@github.com:c0dedance/petite-vue.git",
