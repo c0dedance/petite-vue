@@ -1,1 +1,1 @@
-export * from '@petite-vue/runtime-core'
+export * from '@petite-vue/runtime-dom'

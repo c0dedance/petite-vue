@@ -1,5 +1,5 @@
 {
-  "name": "petite-vue",
+  "name": "@petite-vue/runtime-dom",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@petite-vue/runtime-dom": "workspace:^1.0.0"
+    "@petite-vue/runtime-core": "workspace:^1.0.0"
   }
 }

@@ -36,14 +36,20 @@ importers:
       '@petite-vue/reactivity': link:../reactivity
       '@petite-vue/shared': link:../shared
 
+  packages/runtime-dom:
+    specifiers:
+      '@petite-vue/runtime-core': workspace:^1.0.0
+    dependencies:
+      '@petite-vue/runtime-core': link:../runtime-core
+
   packages/shared:
     specifiers: {}
 
   packages/vue:
     specifiers:
-      '@petite-vue/runtime-core': workspace:^1.0.0
+      '@petite-vue/runtime-dom': workspace:^1.0.0
     dependencies:
-      '@petite-vue/runtime-core': link:../runtime-core
+      '@petite-vue/runtime-dom': link:../runtime-dom
 
 packages:
 
