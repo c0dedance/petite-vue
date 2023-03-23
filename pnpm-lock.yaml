@@ -47,8 +47,10 @@ importers:
 
   packages/vue:
     specifiers:
+      '@petite-vue/reactivity': workspace:^1.0.0
       '@petite-vue/runtime-dom': workspace:^1.0.0
     dependencies:
+      '@petite-vue/reactivity': link:../reactivity
       '@petite-vue/runtime-dom': link:../runtime-dom
 
 packages:

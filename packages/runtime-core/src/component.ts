@@ -1,4 +1,4 @@
-import { shallowReadonly } from '@petite-vue/reactivity';
+import { proxyRefs, shallowReadonly } from '@petite-vue/reactivity';
 import { isObject } from '@petite-vue/shared';
 import { emit } from './componentEmit';
 import { initProps } from './componentProps';
@@ -9,6 +9,8 @@ export function createComponentInstance(vnode, parent) {
     vnode,
     type: vnode.type,// component
     setupState: {},
+    isMounted: false,
+    subTree: {},
     props: {},
     slots: {},
     parent,
@@ -52,7 +54,8 @@ function handleSetupResult(instance, setupResult) {
 
   // object
   if (isObject(setupResult)) {
-    instance.setupState = setupResult
+    // proxyRefs(setupResult)使得模板引用ref可以不通过value取值
+    instance.setupState = proxyRefs(setupResult)
   }
   finishComponentSetup(instance)
 }
