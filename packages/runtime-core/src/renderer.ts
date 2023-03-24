@@ -1,5 +1,5 @@
 import { effect } from '@petite-vue/reactivity';
-import { ShapeFlags } from '@petite-vue/shared';
+import { EMPTY_OBJ, ShapeFlags } from '@petite-vue/shared';
 import { createComponentInstance, setupComponent } from "./component"
 import { createAppAPI } from './createApp';
 import { Fragment, Text } from './vnode';
@@ -72,8 +72,36 @@ export function createRenderer(options) {
     console.log('patchElement');
     console.log('n1', n1);
     console.log('n2', n2);
+    const oldProps = n1.props || EMPTY_OBJ
+    const newProps = n2.props || EMPTY_OBJ
+    // 从旧vnode取出dom元素，同时传给新vnode（接力）
+    const el = n2.el = n1.el
+    patchProps(el, oldProps, newProps)
 
-
+  }
+  function patchProps(el, oldProps, nextProps) {
+    if (oldProps === nextProps) {
+      return
+    }
+    // 遍历新节点
+    for (const key of Object.keys(nextProps)) {
+      const preProp = oldProps[key]
+      const nextProp = nextProps[key]
+      // 不同值更新（新增）
+      if (preProp !== nextProp) {
+        hostPatchProp(el, key, preProp, nextProp)
+      }
+    }
+    if (oldProps === EMPTY_OBJ) {
+      return
+    }
+    for (const key of Object.keys(oldProps)) {
+      const preProp = oldProps[key]
+      // 不同值更新（新增）
+      if (!(key in nextProps)) {
+        hostPatchProp(el, key, preProp, null)
+      }
+    }
   }
   function mountComponent(n2, container, parentComponent) {
     // 通过vnode创建组件实例
@@ -89,7 +117,7 @@ export function createRenderer(options) {
     const el = n2.el = hostCreateElement(type)
     // 处理props
     for (const key of Object.keys(props)) {
-      hostPatchProp(el, key, props[key])
+      hostPatchProp(el, key, null, props[key])
     }
     // 处理children
     if (ShapeFlags.TEXT_CHILDREN & shapeFlag) {

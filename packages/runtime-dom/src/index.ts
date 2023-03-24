@@ -1,17 +1,23 @@
+import { isNil } from './../../shared/src/index';
 import { createRenderer } from '@petite-vue/runtime-core'
 import { isEventKey } from '@petite-vue/shared';
 export function createElement(type) {
   return document.createElement(type)
 }
-export function patchProp(el, key, value) {
+export function patchProp(el, key, preValue, nextValue) {
   // 处理事件
   if (isEventKey(key)) {
     const event = key.slice(2).toLowerCase();
-    el.addEventListener(event, value);
+    el.addEventListener(event, nextValue);
     return
   }
   // 处理属性
-  el.setAttribute(key, value)
+  if (isNil(nextValue)) {
+    // nextValue空，为删除属性
+    el.removeAttribute(key)
+  } else {
+    el.setAttribute(key, nextValue)
+  }
 }
 export function insert(container, el) {
   return container.append(el)

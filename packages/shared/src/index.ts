@@ -3,6 +3,7 @@ export const isObject = val => val !== null && typeof val === "object"
 export const isArray = Array.isArray
 export const isString = val => typeof val === "string"
 export const isFunction = val => typeof val === "function"
+export const isNil = val => val === undefined || val === null
 export const hasChanged = (val, newVal) => !Object.is(val, newVal)
 export const isEventKey = k => /^on[A-Z][a-z]+$/.test(k)
 export const hasOwn = (target, key) => target?.hasOwnProperty(key)
@@ -18,4 +19,5 @@ const capitalize = (str: string) => {
 export const toHandlerKey = (str: string) => {
   return str ? "on" + capitalize(str) : ""
 }
+export const EMPTY_OBJ = Object.freeze({})
 export * from './ShapeFlags'
