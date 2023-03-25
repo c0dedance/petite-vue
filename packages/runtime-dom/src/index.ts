@@ -22,12 +22,22 @@ export function patchProp(el, key, preValue, nextValue) {
 export function insert(container, el) {
   return container.append(el)
 }
-
+export function remove(el) {
+  const parent = el.parentNode
+  if (parent) {
+    parent.removeChild(el)
+  }
+}
+export function setElementText(el: HTMLElement, text) {
+  el.textContent = text
+}
 // renderer.createApp(内部引用着render)
 const renderer: any = createRenderer({
   createElement,
   patchProp,
   insert,
+  remove,
+  setElementText,
 })
 // 实际给外部使用者使用的createApp
 export const createApp = renderer.createApp
