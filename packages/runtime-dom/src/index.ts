@@ -19,8 +19,9 @@ export function patchProp(el, key, preValue, nextValue) {
     el.setAttribute(key, nextValue)
   }
 }
-export function insert(container, el) {
-  return container.append(el)
+export function insert(parent, child, anchor = null) {
+  // return container.append(el)
+  return parent.insertBefore(child, anchor)
 }
 export function remove(el) {
   const parent = el.parentNode

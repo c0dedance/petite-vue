@@ -8,6 +8,7 @@ export function createVNode(type, props?, children?) {
     type,
     props,
     children,
+    key: props?.key,
     el: null,
     shapeFlag: getShapeFlag(type) // 区分组件/元素
   }
