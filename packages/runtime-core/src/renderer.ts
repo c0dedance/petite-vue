@@ -1,3 +1,4 @@
+import { isNil } from '@petite-vue/shared';
 import { effect } from '@petite-vue/reactivity';
 import { EMPTY_OBJ, ShapeFlags } from '@petite-vue/shared';
 import { createComponentInstance, setupComponent } from "./component"
@@ -195,6 +196,49 @@ export function createRenderer(options) {
     }
     // 5.处理乱序部分
     else {
+      const s1 = i
+      const s2 = i
+      // 新节点都找到复用(patch过)，剩下的老节点可以直接移除
+      let needPatchCount = e2 - s2 + 1
+      // map优化查找
+      const keyMapNewIndex = {}
+      for (let i = s2; i <= e2; i++) {
+        const key = c2[i]?.key
+        if (!isNil(key)) {
+          keyMapNewIndex[key] = i
+        }
+      }
+
+      for (let i = s1; i <= e1; i++) {
+        const preChild = c1[i]
+
+        // 新的节点更新完了，老的节点跳过查找直接移除
+        if (!needPatchCount) {
+          hostRemove(preChild.el)
+          continue
+        }
+        // 在c2中查找，没有则移除，否则可以复用
+        let newIndex
+        // 老节点可能没有key
+        if (!isNil(preChild.key)) {
+          newIndex = keyMapNewIndex[preChild.key]
+        } else {
+          for (let j = s2; j <= e2; j++) {
+            const nextChild = c2[j]
+            if (isSomeVNodeType(preChild, nextChild)) {
+              newIndex = j
+              break
+            }
+          }
+        }
+        // 不可以复用
+        if (newIndex === undefined) {
+          hostRemove(preChild.el)
+        } else {
+          patch(preChild, c2[newIndex], container, parentComponent, null)
+          needPatchCount--
+        }
+      }
     }
 
 

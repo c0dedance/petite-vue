@@ -39,8 +39,10 @@ importers:
   packages/runtime-dom:
     specifiers:
       '@petite-vue/runtime-core': workspace:^1.0.0
+      '@petite-vue/shared': workspace:^1.0.0
     dependencies:
       '@petite-vue/runtime-core': link:../runtime-core
+      '@petite-vue/shared': link:../shared
 
   packages/shared:
     specifiers: {}

@@ -1,4 +1,4 @@
-import { isNil } from './../../shared/src/index';
+import { isNil } from '@petite-vue/shared';
 import { createRenderer } from '@petite-vue/runtime-core'
 import { isEventKey } from '@petite-vue/shared';
 export function createElement(type) {
