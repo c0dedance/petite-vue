@@ -200,6 +200,9 @@ export function createRenderer(options) {
       const s2 = i
       // 新节点都找到复用(patch过)，剩下的老节点可以直接移除
       let needPatchCount = e2 - s2 + 1
+      const newIndexToOldIndexMap = Array(needPatchCount).fill(-1)
+      let moved = false // 是否需要移动（当newIndexToOldIndex过程中，newIndexToOldIndexMap总是递增时不需要移动）
+      let maxNewIndexSoFar = -1
       // map优化查找
       const keyMapNewIndex = {}
       for (let i = s2; i <= e2; i++) {
@@ -235,8 +238,37 @@ export function createRenderer(options) {
         if (newIndex === undefined) {
           hostRemove(preChild.el)
         } else {
+
+          if (newIndex >= maxNewIndexSoFar) {
+            maxNewIndexSoFar = newIndex
+          } else {
+            moved = true
+          }
+
+          // 新节点索引 -> 旧节点索引（只算乱序部分需要减去s2）
+          newIndexToOldIndexMap[newIndex - s2] = i
           patch(preChild, c2[newIndex], container, parentComponent, null)
           needPatchCount--
+        }
+      }
+      // 循环patch remove之后，进行节点复用（移动）
+      const increasingNewIndexSequence = moved ? getSequence(newIndexToOldIndexMap) : []
+      let p = increasingNewIndexSequence.length - 1 // 递增子序列指针
+      for (let i = newIndexToOldIndexMap.length - 1; i >= 0; i--) {
+        const nextIndex = i + s2 // 乱序部分开始
+        const nextChild = c2[nextIndex]
+        const anchor = nextIndex + 1 < c2.length ? c2[nextIndex + 1].el : null // 锚点选择右侧固定部分
+        // 老节点没有中没有对应的新节点，需要创建
+        if (newIndexToOldIndexMap[i] === -1) {
+          patch(null, nextChild, container, parentComponent, anchor);
+        } else if (moved) {
+          // 优化 p<0 || 不在稳定序列内需要移动
+          if (p < 0 || increasingNewIndexSequence[p] !== i) {
+            // 需要移动
+            hostInsert(container, nextChild.el, anchor)
+          } else {
+            p--
+          }
         }
       }
     }
@@ -313,4 +345,45 @@ export function createRenderer(options) {
   return {
     createApp: createAppAPI(render)
   }
+}
+
+function getSequence(arr) {
+  const p = arr.slice();
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i];
+    if (arrI !== 0) {
+      j = result[result.length - 1];
+      if (arr[j] < arrI) {
+        p[i] = j;
+        result.push(i);
+        continue;
+      }
+      u = 0;
+      v = result.length - 1;
+      while (u < v) {
+        c = (u + v) >> 1;
+        if (arr[result[c]] < arrI) {
+          u = c + 1;
+        } else {
+          v = c;
+        }
+      }
+      if (arrI < arr[result[u]]) {
+        if (u > 0) {
+          p[i] = result[u - 1];
+        }
+        result[u] = i;
+      }
+    }
+  }
+  u = result.length;
+  v = result[u - 1];
+  while (u-- > 0) {
+    result[u] = v;
+    v = p[v];
+  }
+  return result;
 }
